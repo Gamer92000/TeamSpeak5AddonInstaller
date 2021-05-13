@@ -1,0 +1,114 @@
+name: Build and Deploy
+
+on:
+  push:
+    tags:
+      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+
+jobs:
+  build:
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+      max-parallel: 3
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+          architecture: 'x64'
+
+      - name: Install
+        run: pip install -r requirements.txt
+
+      - name: Build Linux
+        if: startsWith(matrix.os, 'ubuntu')
+        run: ./compile/compile_linux.sh
+        
+      - name: Build Mac
+        if: startsWith(matrix.os, 'macos')
+        run: ./compile/compile_mac.sh
+        
+      - name: Build Win
+        if: startsWith(matrix.os, 'windows')
+        run: ./compile/compile_win.cmd
+
+      - name: Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ matrix.os }}
+          path: dist
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+
+
+  upload:
+    needs: release
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+      max-parallel: 3
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: ${{ matrix.os }}
+
+      - name: chmod
+        if: startsWith(matrix.os, 'ubuntu')
+        run: chmod +x TS5AddonInstaller_Linux
+
+      - name: Upload Linux Asset
+        if: startsWith(matrix.os, 'ubuntu')
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.release.outputs.upload_url }}
+          asset_path: TS5AddonInstaller_Linux
+          asset_name: TS5AddonInstaller_Linux
+          asset_content_type: application/x-executable
+
+      - name: Upload Mac Asset
+        if: startsWith(matrix.os, 'macos')
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.release.outputs.upload_url }}
+          asset_path: TS5AddonInstaller_Mac.zip
+          asset_name: TS5AddonInstaller_Mac.zip
+          asset_content_type: application/zip
+
+      - name: Upload Windows Asset
+        if: startsWith(matrix.os, 'windows')
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.release.outputs.upload_url }}
+          asset_path: TS5AddonInstaller_Win.exe
+          asset_name: TS5AddonInstaller_Win.exe
+          asset_content_type: application/x-executable

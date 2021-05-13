@@ -1,0 +1,39 @@
+= TEAMSPEAK 5 UNOFFICIAL Plugin Installer
+:experimental:
+:description: A TS5 Plugin Installer
+:icons: font
+
+ifdef::env-github[]
+:tip-caption: :bulb:
+:caution-caption: :fire:
+endif::[]
+
+:toc: left
+:idseparator: -
+ifdef::env-github,safe-mode-secure[]
+:toc:
+:toc-placement!:
+endif::[]
+A TeamSpeak 5 Plugin Installer.
+
+ifdef::env-github,safe-mode-secure[]
+toc::[]
+endif::[]
+
+image:https://github.com/Gamer92000/TeamSpeak5AddonInstaller/actions/workflows/main.yml/badge.svg[link=https://github.com/Gamer92000/TeamSpeak5AddonInstaller/actions/workflows/main.yml]
+
+== Disclaimer
+This tool needs to modify your TeamSpeak 5 installation files and thus requires UAC elevation on Windows to function.
+I am not responsible for anything that might happen. If something goes down you can either reinstall TeamSpeak or wait for an update.
+Every time TeamSpeak updates all the addons will be removed again. So you need to reinstall them.
+
+CAUTION: Different versions of the installer might not be compatible. Every version is only guarateed to be able to uninstall addons that were installed with the same version.
+
+== Installation
+The latest release can be found on the https://github.com/Gamer92000/TeamSpeak5AddonInstaller/releases[releases] tab on the side.
+AntiVirus software or other security software may block either download or execution but this is just because the executables are not signed.
+For Mac e.g. you need to Ctrl + Click on the App in Finder to open it in oder to see the option to open an unsafe program.
+
+== Contribution
+Any contributions are always welcome. Simply open a new issue or create a pull request.
+But keep in mind that development on this project will most likely only continue to the point when plugins are officially supported.
