@@ -1,6 +1,6 @@
 from PIL import Image, ImageTk
 import tkinter as tk
-import globals, io, urllib.request, re
+import webbrowser, globals, io, urllib.request, re
 import config
 from threading import Thread
 
@@ -76,7 +76,7 @@ class Addon:
             f = globals.FONT.copy()
             f.config(underline = True, size=9)
             more = tk.Label(container, text="more", cursor="hand2", fg="blue", font=f)
-            more.bind("<Button-1>", lambda e: webbrowser.open_new(url))
+            more.bind("<Button-1>", lambda e: webbrowser.open_new(self.url))
             more.grid(row=0, column=0, sticky="e", columnspan=3)
             self.objects.append(more)
 
