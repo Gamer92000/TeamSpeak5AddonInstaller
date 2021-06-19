@@ -71,8 +71,8 @@ class Application(tk.Frame):
         if not globals.filename or not globals.filename.endswith("index.html"): return
         self.indexLabel["text"] = globals.filename
         self.indexLabel.config(fg="#000")
-        for button in buttonList:
-            button.config(state=tk.NORMAL)
+        globals.disableAllButtons()
+        globals.enableAllButtons()
         showPage(currpage)
 
     def prev(self):
