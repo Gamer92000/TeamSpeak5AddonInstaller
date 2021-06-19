@@ -31,6 +31,7 @@ class Addon:
             self.image = ImageTk.PhotoImage(im)
 
     def checkInstall(self):
+        if (globals.filename == ""): return
         self.installed = self.id in open(globals.filename).read()
 
     def install(self):
