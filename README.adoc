@@ -22,6 +22,13 @@ endif::[]
 
 image:https://github.com/Gamer92000/TeamSpeak5AddonInstaller/actions/workflows/main.yml/badge.svg[link=https://github.com/Gamer92000/TeamSpeak5AddonInstaller/actions/workflows/main.yml]
 
+== THIS IS NO LONGER SUPPORTED,
+== SHOULD (AND CAN'T) BE USED ANYMORE.
+== https://community.teamspeak.com/c/ts-client/extensions/39[Look here instead]
+
+
+---
+
 == Disclaimer
 This tool needs to modify your TeamSpeak 5 installation files and thus requires UAC elevation on Windows to function.
 I am not responsible for anything that might happen. If something goes down you can either reinstall TeamSpeak or wait for an update.
