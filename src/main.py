@@ -138,7 +138,7 @@ try:                # try custom lookup server from config file
     if conf == None: raise Exception()
     configData = requests.get(str(conf['url'])).text
 except:             # fallback to default lookup server
-    configRequest = requests.get("https://julianimhof.de/files/TS5Addons/addons.yml")
+    configRequest = requests.get("https://raw.githubusercontent.com/Gamer92000/TeamSpeak5AddonInstaller/master/server/addons.yml")
     if configRequest.status_code != 200:
         print("Error: Could not fetch addon list!")
         sys.exit(1)
