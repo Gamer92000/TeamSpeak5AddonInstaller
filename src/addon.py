@@ -47,7 +47,7 @@ class Addon:
         try:
             if not hasattr(self, 'data'):
                 self.download()
-            globals.inplace_change(globals.filename, '</head>', self.data + '</head>')
+            globals.inplace_replace(globals.filename, '</head>', self.data + '</head>')
         except Exception as e:
             print(e)
 
@@ -61,9 +61,8 @@ class Addon:
         self.status.config(fg="#444", text="uninstalling")
 
         # uninstall addon
-        comment = '<!-- ' + self.id + ' -->'
-        regex = re.compile(comment + '(.*)' + comment)
-        globals.inplace_change(globals.filename, regex, '')
+        comment = '<!-- ' + self.id.strip() + ' -->'
+        globals.inplace_remove(globals.filename, comment)
 
         # unlock UI
         globals.enableAllButtons()

@@ -48,12 +48,25 @@ def enableAllButtons():
     app.quit.config(state=tk.NORMAL)
 
 
-def inplace_change(filename, old_regex, new_regex):
+def inplace_replace(filename, old_regex, new_regex):
     with open(filename) as f:
         s = f.read()
     try:
         with open(filename, 'w') as f:
             s = re.sub(old_regex, new_regex, s)
+            f.write(s)
+    except Exception as e:
+        print(e)
+        # this damn windows uac....
+        fixWindowsUAC()
+
+def inplace_remove(filename, splitter):
+    with open(filename) as f:
+        s = f.read()
+    try:
+        with open(filename, 'w') as f:
+            # remove everything between the first and second occurence of the splitter
+            s = s.split(splitter)[0] + s.split(splitter)[2]
             f.write(s)
     except Exception as e:
         print(e)
