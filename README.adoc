@@ -31,7 +31,7 @@ This tool modifies your TeamSpeak 5 installation files and thus requires UAC ele
 I am not responsible for anything that might happen. If something goes wrong you can either reinstall TeamSpeak or wait for an update.
 Every time TeamSpeak updates all the addons will be removed. So you need to reinstall them.
 
-CAUTION: Different versions of the installer might not be cross compatible. Every version is only guarateed to be able to uninstall addons that were installed with the same version.
+CAUTION: Different versions of the installer might not be cross compatible. Every version is only guaranteed to be able to uninstall addons that were installed with the same version.
 
 == Installation
 The latest release can be found on the https://github.com/Gamer92000/TeamSpeak5AddonInstaller/releases[releases] tab on the side.
