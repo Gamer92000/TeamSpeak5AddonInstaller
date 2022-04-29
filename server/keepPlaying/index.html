@@ -1,0 +1,11 @@
+<script type="text/javascript">
+  // why can't one just remove an arbitrary listener?...
+  window.addEventListener("blur", function (event) {
+    // 10 ms timeout to prevent stupid race condition
+    setTimeout(() => {
+      // send focus event to window element
+      const event = new Event('focus');
+      window.dispatchEvent(event);
+    }, 10);
+  });
+</script>

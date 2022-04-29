@@ -7,3 +7,11 @@ addons:
     url: "https://raw.githubusercontent.com/Gamer92000/TeamSpeak5AddonInstaller/master/server/imageAutoLoad/index.html"
     icon: "https://raw.githubusercontent.com/Gamer92000/TeamSpeak5AddonInstaller/master/server/imageAutoLoad/icon.png"
     info: "https://community.teamspeak.com/u/gamer92000/summary"
+  -
+    name: "Keep Playing"
+    description: "Keeps playing GIFs when unfocused"
+    id: "keepPlaying"
+    version: "1.0"
+    url: "https://raw.githubusercontent.com/Gamer92000/TeamSpeak5AddonInstaller/master/server/keepPlaying/index.html"
+    icon: "https://raw.githubusercontent.com/Gamer92000/TeamSpeak5AddonInstaller/master/server/keepPlaying/icon.png"
+    info: "https://community.teamspeak.com/u/gamer92000/summary"
