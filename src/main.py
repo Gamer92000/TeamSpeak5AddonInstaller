@@ -1,9 +1,9 @@
+import sys
 import tkinter as tk
 from tkinter import ttk, font
 from tkinter.filedialog import askopenfilename
-from config import *
 from addon import Addon
-import configparser, io, math, webbrowser, globals, re
+import yaml, io, math, webbrowser, globals, re
 import requests
 
 class Application(tk.Frame):
@@ -126,24 +126,36 @@ prevButtonState = None
 nextButtonState = None
 
 globals.init()
-initConfigValues()
 
-conf = configparser.ConfigParser()
-conf.read('TS5AddonInstaller.ini')
+conf = None
+try:
+    conf = yaml.safe_load(open("TS5AddonInstaller.yml", "r"))
+except:
+    pass
 
 # fetch possible addons
-config = configparser.ConfigParser()
 try:                # try custom lookup server from config file
-    configData = requests.get(str(conf['config']['url'])).text
-except Exception:   # fallback to default lookup server
-    configData = requests.get("https://julianimhof.de/files/TS5Addons/experimental/addons.ini").text
-config.read_file(io.StringIO(configData))
+    if conf == None: raise Exception()
+    configData = requests.get(str(conf['url'])).text
+except:             # fallback to default lookup server
+    configRequest = requests.get("https://julianimhof.de/files/TS5Addons/addons.yml")
+    if configRequest.status_code != 200:
+        print("Error: Could not fetch addon list!")
+        sys.exit(1)
+    configData = configRequest.text
 
-MAXPAGES = math.ceil((len(config.sections()) - 1) / ITEMSPERPAGE)
+config = yaml.safe_load(io.StringIO(configData))
+
+if config.get('addons') is None:
+    print("No addons found!")
+
+n = len(config["addons"])
+
+MAXPAGES = math.ceil(n / ITEMSPERPAGE)
 
 addons = []
-for addon in [x for x in config.sections() if x != "general"]:
-    addons.append(Addon(addon, config[addon]))
+for addon in config['addons']:
+    addons.append(Addon(addon))
 
 app = Application(master=root)
 globals.app = app

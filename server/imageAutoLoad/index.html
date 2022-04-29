@@ -1,0 +1,43 @@
+<script type="text/javascript" >
+  const loadImages = async function() {
+    const containerList = Array.from(document.getElementsByClassName("ts-chat-container"));
+    containerList.forEach(container => {
+      const files = Array.from(container.getElementsByClassName("ts-chat-message-attachment-file"));
+      // filter files for correct button
+      const noErrors = files.filter(file => file.getElementsByClassName("error").length === 0);
+
+      console.warn("noErros: ", noErrors);
+
+      const buttons = noErrors.map(file => file.getElementsByClassName("tsv-button")[0]).filter(button => button && button.innerHTML.includes("Load Image"));
+      buttons.forEach(button => {
+        button.click();
+      });
+    });
+  }
+  
+  const replacementCallback = async function() {
+    loadImages();
+  }
+  
+  //poll each .5 sec for open chat windows
+  var a = [];
+  setInterval(async () => {
+    containerList = Array.from(document.getElementsByClassName("ts-chat-container"));
+    var tmpList = [];
+    await Promise.all(containerList.map((container) => {
+      const actualContainer = container.getElementsByClassName("tsv-virtual-list-container")[0]
+      const replacementObserver = new MutationObserver(replacementCallback);
+      if (a.map(obj => obj.key).includes(actualContainer)) return;
+      replacementObserver.observe(actualContainer, {childList: true, subtree: true});
+      tmpList.push({key: actualContainer, value: replacementObserver});
+      loadImages();
+    }));
+    // disconnect all observers that are not in the new list
+    a.forEach(obj => {
+      if (!tmpList.map(iobj => iobj.key).includes(obj.key)) {
+        obj.value.disconnect();
+      }
+    });
+    a = tmpList;
+  }, 500);
+</script>

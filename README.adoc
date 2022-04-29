@@ -22,25 +22,31 @@ endif::[]
 
 image:https://github.com/Gamer92000/TeamSpeak5AddonInstaller/actions/workflows/main.yml/badge.svg[link=https://github.com/Gamer92000/TeamSpeak5AddonInstaller/actions/workflows/main.yml]
 
-== THIS IS NO LONGER SUPPORTED,
-== SHOULD (AND CAN'T) BE USED ANYMORE.
-== https://community.teamspeak.com/c/ts-client/extensions/39[Look here instead]
+== WE ARE BACK!
 
-
----
+Themes can now be found https://community.teamspeak.com/c/ts-client/extensions/39[here]!
 
 == Disclaimer
-This tool needs to modify your TeamSpeak 5 installation files and thus requires UAC elevation on Windows to function.
-I am not responsible for anything that might happen. If something goes down you can either reinstall TeamSpeak or wait for an update.
-Every time TeamSpeak updates all the addons will be removed again. So you need to reinstall them.
+This tool modifies your TeamSpeak 5 installation files and thus requires UAC elevation on Windows to function.
+I am not responsible for anything that might happen. If something goes wrong you can either reinstall TeamSpeak or wait for an update.
+Every time TeamSpeak updates all the addons will be removed. So you need to reinstall them.
 
-CAUTION: Different versions of the installer might not be compatible. Every version is only guarateed to be able to uninstall addons that were installed with the same version.
+CAUTION: Different versions of the installer might not be cross compatible. Every version is only guarateed to be able to uninstall addons that were installed with the same version.
 
 == Installation
 The latest release can be found on the https://github.com/Gamer92000/TeamSpeak5AddonInstaller/releases[releases] tab on the side.
 AntiVirus software or other security software may block either download or execution but this is just because the executables are not signed.
 For Mac e.g. you need to Ctrl + Click on the App in Finder to open it in oder to see the option to open an unsafe program.
 
+== Usage
+Just open the installer and click on the "Install" button for the addon you want to install.
+
 == Contribution
 Any contributions are always welcome. Simply open a new issue or create a pull request.
-But keep in mind that development on this project will most likely only continue to the point when plugins are officially supported.
+But keep in mind that development on this project will only continue to the point at which plugins are officially supported.
+
+To setup a local environment you can just clone the repository and run a simple http server in the `server` directory on port `8000`. Then by starting the client from the root directory of the repo you can access the local server. To change the addons used simply adjust the `addons` variable in the `addons.yml` file and restart the client.
+
+== TODO
+* [ ] Make the UI more user friendly
+* [ ] Add better error handling

@@ -1,66 +1,71 @@
 from PIL import Image, ImageTk
 import tkinter as tk
 import webbrowser, globals, io, urllib.request, re
-import config
 from threading import Thread
+import requests
 
 class Addon:
-    def __init__(self, name, definitions):
-        self.name = name
+    def __init__(self, definitions):
         self.status = None
         self.installed = False
-        self.typ = definitions.get("type")
-        self.url = definitions.get("url")
-        self.conf = definitions.get("config")
-        self.description = definitions.get("description")
-        self.id = definitions.get("identifier")
+        self.name = definitions["name"]
+        self.url = definitions["url"]
+        self.description = definitions["description"]
+        self.id = definitions["id"]
+        self.info = definitions.get("info")
         self.objects = []
-        self.config = definitions
-        if self.conf:
-            for n,t,d in map(lambda x: x.split(":"), self.conf.split("|")):
-                config.configStorage[self.id + n] = d
         try:
-            imageData = urllib.request.urlopen(definitions['image']).read()
+            imageData = urllib.request.urlopen(definitions['icon']).read()
             im = Image.open(io.BytesIO(imageData))
             im = im.resize((80, 80), Image.ANTIALIAS)
             self.image = ImageTk.PhotoImage(im)
-            self.im = im
         except Exception as e:
-            print(e)
-            im = Image.new('RGBA', (80, 80), (255, 0, 0, 0))
+            print("Could not load image for addon: " + self.name)
+            im = Image.new('RGBA', (80, 80), (100, 100, 100, 80))
             self.image = ImageTk.PhotoImage(im)
+
+    def download(self):
+        # download addon from self.url
+        data = requests.get(self.url)
+        if data.status_code != 200:
+            raise Exception("Could not download addon")
+        data = data.text
+        # add id as comment to start and end of data
+        data = '<!-- ' + self.id + ' -->\n' + data + '\n<!-- ' + self.id + ' -->'
+        self.data = data
 
     def checkInstall(self):
         if (globals.filename == ""): return
         self.installed = self.id in open(globals.filename).read()
 
     def install(self):
+        # lock UI
         globals.disableAllButtons()
         self.status.config(fg="#444", text="installing")
 
-        confStr = self.config['install']
-        for conf in re.findall(r"{{([^\}]*)}}", confStr):
-            s = config.configStorage.get(self.id + conf)
-            s = s if s else ""
-            confStr = re.sub("{{" + conf + "}}", s, confStr)
+        # install addon
+        try:
+            if not hasattr(self, 'data'):
+                self.download()
+            globals.inplace_change(globals.filename, '</head>', self.data + '</head>')
+        except Exception as e:
+            print(e)
 
-        globals.inplace_change(globals.filename, '</head>', confStr + '</head>')
+        # unlock UI
         globals.enableAllButtons()
         globals.showPage()
 
     def uninstall(self):
+        # lock UI
         globals.disableAllButtons()
         self.status.config(fg="#444", text="uninstalling")
 
-        confStr = self.config['install']
-        for i in "\\?+*[]().^$":
-            confStr = confStr.replace(i, "\\" + i)
-        for conf in re.findall("{{([^\}]*)}}", confStr):
-            confStr = re.sub("{{" + conf+ "}}", '[^\?\=\&]*', confStr)
-        for i in "{}":
-            confStr = confStr.replace(i, "\\" + i)
+        # uninstall addon
+        comment = '<!-- ' + self.id + ' -->'
+        regex = re.compile(comment + '(.*)' + comment)
+        globals.inplace_change(globals.filename, regex, '')
 
-        globals.inplace_change(globals.filename, confStr, '')
+        # unlock UI
         globals.enableAllButtons()
         globals.showPage()
 
@@ -69,26 +74,21 @@ class Addon:
         container.pack(side="top", fill=tk.X, padx=5, pady=5)
         self.objects.append(container)
 
-        title = tk.Label(container, text=self.name + " - " + self.typ, font=globals.FONT)
+        title = tk.Label(container, text=self.name, font=globals.FONT)
         title.grid(row=0, column=0, sticky="w", columnspan=3)
         self.objects.append(title)
 
-        if self.url:
+        if self.info:
             f = globals.FONT.copy()
             f.config(underline = True, size=9)
             more = tk.Label(container, text="more", cursor="hand2", fg="blue", font=f)
-            more.bind("<Button-1>", lambda e: webbrowser.open_new(self.url))
+            more.bind("<Button-1>", lambda e: webbrowser.open_new(self.info))
             more.grid(row=0, column=0, sticky="e", columnspan=3)
             self.objects.append(more)
 
         self.status = tk.Label(container, text="installed" if self.installed else "not installed", fg="green" if self.installed else "#000", font=globals.FONT)
         self.status.grid(row=1, column=0, pady=5)
         self.objects.append(self.status)
-
-        if self.conf:
-            conf = tk.Button(container, text="Configure", font=globals.FONT, command=lambda: config.makeConfig(self), state=tk.DISABLED if self.installed else tk.NORMAL)
-            conf.grid(row=2, column=0, pady=5)
-            self.objects.append(conf)
 
         button = tk.Button(container, text="UNINSTALL" if self.installed else "INSTALL", relief="sunken" if self.installed else "raised", state=tk.DISABLED if globals.filename=="" else tk.NORMAL, command=self.toggleInstall, font=globals.FONT)
         button.grid(row=3, column=0, pady=5)

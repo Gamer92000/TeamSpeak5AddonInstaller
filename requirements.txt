@@ -1,4 +1,5 @@
-pyinstaller==4.0
+PyInstaller==4.10
 pillow
 requests
+pyyaml
 
