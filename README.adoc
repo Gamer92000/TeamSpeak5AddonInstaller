@@ -36,7 +36,7 @@ CAUTION: Different versions of the installer might not be cross compatible. Ever
 == Installation
 The latest release can be found on the https://github.com/Gamer92000/TeamSpeak5AddonInstaller/releases[releases] tab on the side.
 AntiVirus software or other security software may block either download or execution but this is just because the executables are not signed.
-For Mac e.g. you need to Ctrl + Click on the App in Finder to open it in oder to see the option to open an unsafe program.
+For Mac you need to Ctrl + Click on the App in Finder to open it in order to see the option to open an unsafe program.
 
 == Usage
 Just open the installer and click on the "Install" button for the addon you want to install.
