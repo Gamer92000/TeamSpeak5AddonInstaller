@@ -1,23 +1,31 @@
 <script type="text/javascript" >
   (() => {
+    const loadImagesInContainer = async function(messageWrapper) {
+      const files = Array.from(container.getElementsByClassName("ts-chat-message-attachment-file"));
+      // filter files for correct button
+      const noErrors = files.filter(file => file.getElementsByClassName("error").length === 0);
+
+      const buttons = noErrors.map(file => file.getElementsByClassName("tsv-button")[0]).filter(button => button && button.innerHTML.includes("Load Image"));
+      buttons.forEach(button => {
+        button.click();
+      });
+    }
+
     const loadImages = async function() {
       const containerList = Array.from(document.getElementsByClassName("ts-chat-container"));
       containerList.forEach(container => {
-        const files = Array.from(container.getElementsByClassName("ts-chat-message-attachment-file"));
-        // filter files for correct button
-        const noErrors = files.filter(file => file.getElementsByClassName("error").length === 0);
-
-        console.warn("noErros: ", noErrors);
-
-        const buttons = noErrors.map(file => file.getElementsByClassName("tsv-button")[0]).filter(button => button && button.innerHTML.includes("Load Image"));
-        buttons.forEach(button => {
-          button.click();
-        });
+        loadImagesInContainer(container);
       });
     }
     
-    const replacementCallback = async function() {
-      loadImages();
+    const replacementCallback = async function(mutationsList, observer) {
+      for(const mutation of mutationsList) {
+        if (mutation.type === 'childList') {
+          for (const node of mutation.addedNodes) {
+            loadImagesInContainer(node);
+          }
+        }
+      }
     }
     
     //poll each .5 sec for open chat windows
@@ -28,8 +36,11 @@
       await Promise.all(containerList.map((container) => {
         const actualContainer = container.getElementsByClassName("tsv-virtual-list-container")[0]
         const replacementObserver = new MutationObserver(replacementCallback);
-        if (a.map(obj => obj.key).includes(actualContainer)) return;
-        replacementObserver.observe(actualContainer, {childList: true, subtree: true});
+        if (a.map(obj => obj.key).includes(actualContainer)) {
+          tmpList.push({key: actualContainer, value: a.filter(obj => obj.key == actualContainer)[0].value});
+          return;
+        }
+        replacementObserver.observe(actualContainer.firstElementChild.firstElementChild, {childList: true});
         tmpList.push({key: actualContainer, value: replacementObserver});
         loadImages();
       }));

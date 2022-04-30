@@ -1,32 +1,70 @@
 <script type="text/javascript">
   (() => {
-    const loadPreviews = async function() {
-      const containerList = Array.from(document.getElementsByClassName("ts-chat-container"));
-      containerList.forEach(container => {
-        const files = Array.from(container.getElementsByClassName("ts-chat-message-attachment-file"));
-        // filter files for correct button
-        const messages = Array.from(document.getElementsByClassName("ts-chat-message-content ts-parsed-text-content"))
-          .filter(elem => elem.children.length == 1 && elem.firstElementChild.children.length == 1 && elem.children[0].tagName == "A");
-        for (message of messages) {
-          if (message.firstElementChild.firstElementChild.tagName != "SPAN") continue;
-          const link = message.firstElementChild.href;
-          if (link.endsWith(".jpg") || link.endsWith(".jpeg") || link.endsWith(".png") || link.endsWith(".gif")) {
-            message.firstElementChild.innerHTML = `<img src="${link}" style="max-width: 350px; max-height: 350px;" />`;
-          }
-          if (link.endsWith(".webm")) {
-            message.firstElementChild.innerHTML = `<video controls loop style="max-width: 350px; max-height: 350px;"><source src="${link}" type="video/webm"></video>`;
-          }
-          if (link.endsWith(".mp4")) {
-            message.firstElementChild.innerHTML += `<p style="font-size: .7em; padding-top: 1em;"><i>TeamSpeak does not support MP4s.</i></p>`;
-          }
-        }
+    const setInnerHTML = function(elm, html) {
+      elm.innerHTML = html;
+      Array.from(elm.querySelectorAll("script")).forEach( oldScript => {
+        const newScript = document.createElement("script");
+        Array.from(oldScript.attributes)
+          .forEach( attr => newScript.setAttribute(attr.name, attr.value) );
+        newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+        oldScript.parentNode.replaceChild(newScript, oldScript);
       });
     }
 
-    const replacementCallback = async function() {
-      loadPreviews();
+    const loadPreviewInContainer = async function(messageWrapper) {
+      const messages = Array.from(messageWrapper.getElementsByClassName("ts-chat-message-content ts-parsed-text-content"))
+        .filter(elem => elem.children.length == 1 && elem.firstElementChild.children.length == 1 && elem.children[0].tagName == "A");
+      for (message of messages) {
+        if (message.firstElementChild.firstElementChild.tagName != "SPAN") continue;
+        const link = message.firstElementChild.href;
+        
+        // parse link to get file extension without parameters
+        const extension = link.split(".").pop().split("?")[0];
+        // get hostname without www
+        const hostname = link.split("//")[1].split("/")[0];
+
+        if (["jpg", "jpeg", "png", "gif"].includes(extension)) {
+          message.firstElementChild.innerHTML = `<img src="${link}" style="max-width: 350px; max-height: 350px;" />`;
+        }
+        else if (["webm"].includes(extension)) {
+          message.firstElementChild.innerHTML = `<video controls loop style="max-width: 350px; max-height: 350px;"><source src="${link}" type="video/webm"></video>`;
+        }
+        else if (["mp4", "avi", "mkv"].includes(extension)) {
+          message.firstElementChild.innerHTML += `<p style="font-size: .7em; padding-top: 1em;"><i>TeamSpeak doesn not support MP4s.</i></p>`;
+        }
+        else if (hostname == "twitter.com") {
+          // embed tweet
+          const tweet = await fetch(`https://publish.twitter.com/oembed?url=${link}`);
+          const tweetJson = await tweet.json();
+          setInnerHTML(message, tweetJson.html);
+          message.style.whiteSpace = "initial";
+        }
+      }
+    }
+
+    const loadPreviews = async function() {
+      const containerList = Array.from(document.getElementsByClassName("ts-chat-container"));
+      containerList.forEach(container => {
+        loadPreviewInContainer(container);
+      });
+    }
+
+    const replacementCallback = function(mutationsList, observer) {
+      something = mutationsList;
+      for(const mutation of mutationsList) {
+        if (mutation.type === 'childList') {
+          for (const node of mutation.addedNodes) {
+            // TODO can this be handled better?
+            if (node.nodeName == "DIV" && !node.classList.contains("rich-embed")) {
+              loadPreviewInContainer(node);
+              node.classList.add("rich-embed");
+            }
+          }
+        }
+      }
     }
     
+    var something = undefined;
     //poll each .5 sec for open chat windows
     var a = [];
     setInterval(async () => {
@@ -34,8 +72,11 @@
       var tmpList = [];
       await Promise.all(containerList.map((container) => {
         const actualContainer = container.getElementsByClassName("tsv-virtual-list-container")[0]
+        if (a.map(obj => obj.key).includes(actualContainer)) {
+          tmpList.push({key: actualContainer, value: a.filter(obj => obj.key == actualContainer)[0].value});
+          return;
+        }
         const replacementObserver = new MutationObserver(replacementCallback);
-        if (a.map(obj => obj.key).includes(actualContainer)) return;
         replacementObserver.observe(actualContainer, {childList: true, subtree: true});
         tmpList.push({key: actualContainer, value: replacementObserver});
         loadPreviews();
