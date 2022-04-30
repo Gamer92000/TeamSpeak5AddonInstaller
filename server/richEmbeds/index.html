@@ -1,15 +1,19 @@
 <script type="text/javascript">
   (() => {
-    const setInnerHTML = function(elm, html) {
-      elm.innerHTML = html;
-      Array.from(elm.querySelectorAll("script")).forEach( oldScript => {
-        const newScript = document.createElement("script");
-        Array.from(oldScript.attributes)
-          .forEach( attr => newScript.setAttribute(attr.name, attr.value) );
-        newScript.appendChild(document.createTextNode(oldScript.innerHTML));
-        oldScript.parentNode.replaceChild(newScript, oldScript);
-      });
+    const maxImageWidth = 350;
+    const maxImageHeight = 500;
+    const maxVideoWidth = 350;
+    const maxVideoHeight = 500;
+    
+    const debounce = function(func, timeout = 300) {
+      let timer;
+      return (...args) => {
+        clearTimeout(timer);
+        timer = setTimeout(() => { func.apply(this, args); }, timeout);
+      };
     }
+
+    const loadTweets = debounce(() => twttr.widgets.load());
 
     const loadPreviewInContainer = async function(messageWrapper) {
       const messages = Array.from(messageWrapper.getElementsByClassName("ts-chat-message-content ts-parsed-text-content"))
@@ -24,20 +28,21 @@
         const hostname = link.split("//")[1].split("/")[0];
 
         if (["jpg", "jpeg", "png", "gif"].includes(extension)) {
-          message.firstElementChild.innerHTML = `<img src="${link}" style="max-width: 350px; max-height: 350px;" />`;
+          message.firstElementChild.innerHTML = `<img src="${link}" style="max-width: ${maxImageWidth}px; max-height: ${maxImageHeight}px;" />`;
         }
         else if (["webm"].includes(extension)) {
-          message.firstElementChild.innerHTML = `<video controls loop style="max-width: 350px; max-height: 350px;"><source src="${link}" type="video/webm"></video>`;
+          message.firstElementChild.innerHTML = `<video controls loop style="max-width: ${maxVideoWidth}px; max-height: ${maxVideoHeight}px;"><source src="${link}" type="video/webm"></video>`;
         }
         else if (["mp4", "avi", "mkv"].includes(extension)) {
-          message.firstElementChild.innerHTML += `<p style="font-size: .7em; padding-top: 1em;"><i>TeamSpeak doesn not support MP4s.</i></p>`;
+          message.firstElementChild.innerHTML += `<p style="font-size: .7em; padding-top: 1em;"><i>TeamSpeak doesn not support this video format.</i></p>`;
         }
         else if (hostname == "twitter.com") {
           // embed tweet
-          const tweet = await fetch(`https://publish.twitter.com/oembed?url=${link}`);
+          const tweet = await fetch(`https://publish.twitter.com/oembed?theme=dark&dnt=true&omit_script=true&url=${link}`);
           const tweetJson = await tweet.json();
-          setInnerHTML(message, tweetJson.html);
+          message.innerHTML = tweetJson.html;
           message.style.whiteSpace = "initial";
+          loadTweets();
         }
       }
     }
