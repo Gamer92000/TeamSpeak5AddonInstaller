@@ -50,3 +50,4 @@ To setup a local environment you can just clone the repository and run a simple 
 == TODO
 * [ ] Make the UI more user friendly
 * [ ] Add better error handling
+* [ ] Add more link types to the rich embeds addon

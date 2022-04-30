@@ -15,3 +15,11 @@ addons:
     url: "https://raw.githubusercontent.com/Gamer92000/TeamSpeak5AddonInstaller/master/server/keepPlaying/index.html"
     icon: "https://raw.githubusercontent.com/Gamer92000/TeamSpeak5AddonInstaller/master/server/keepPlaying/icon.png"
     info: "https://community.teamspeak.com/u/gamer92000/summary"
+  -
+    name: "Rich Embeds"
+    description: "Allows you to embed videos and images in chat"
+    id: "richEmbeds"
+    version: "1.0"
+    url: "https://raw.githubusercontent.com/Gamer92000/TeamSpeak5AddonInstaller/master/server/richEmbeds/index.html"
+    icon: "https://raw.githubusercontent.com/Gamer92000/TeamSpeak5AddonInstaller/master/server/richEmbeds/icon.png"
+    info: "https://community.teamspeak.com/u/gamer92000/summary"

@@ -1,23 +1,30 @@
-<script type="text/javascript" >
+<script type="text/javascript">
   (() => {
-    const loadImages = async function() {
+    const loadPreviews = async function() {
       const containerList = Array.from(document.getElementsByClassName("ts-chat-container"));
       containerList.forEach(container => {
         const files = Array.from(container.getElementsByClassName("ts-chat-message-attachment-file"));
         // filter files for correct button
-        const noErrors = files.filter(file => file.getElementsByClassName("error").length === 0);
-
-        console.warn("noErros: ", noErrors);
-
-        const buttons = noErrors.map(file => file.getElementsByClassName("tsv-button")[0]).filter(button => button && button.innerHTML.includes("Load Image"));
-        buttons.forEach(button => {
-          button.click();
-        });
+        const messages = Array.from(document.getElementsByClassName("ts-chat-message-content ts-parsed-text-content"))
+          .filter(elem => elem.children.length == 1 && elem.firstElementChild.children.length == 1 && elem.children[0].tagName == "A");
+        for (message of messages) {
+          if (message.firstElementChild.firstElementChild.tagName != "SPAN") continue;
+          const link = message.firstElementChild.href;
+          if (link.endsWith(".jpg") || link.endsWith(".jpeg") || link.endsWith(".png") || link.endsWith(".gif")) {
+            message.firstElementChild.innerHTML = `<img src="${link}" style="max-width: 350px; max-height: 350px;" />`;
+          }
+          if (link.endsWith(".webm")) {
+            message.firstElementChild.innerHTML = `<video controls loop style="max-width: 350px; max-height: 350px;"><source src="${link}" type="video/webm"></video>`;
+          }
+          if (link.endsWith(".mp4")) {
+            message.firstElementChild.innerHTML += `<p style="font-size: .7em; padding-top: 1em;"><i>TeamSpeak does not support MP4s.</i></p>`;
+          }
+        }
       });
     }
-    
+
     const replacementCallback = async function() {
-      loadImages();
+      loadPreviews();
     }
     
     //poll each .5 sec for open chat windows
@@ -31,7 +38,7 @@
         if (a.map(obj => obj.key).includes(actualContainer)) return;
         replacementObserver.observe(actualContainer, {childList: true, subtree: true});
         tmpList.push({key: actualContainer, value: replacementObserver});
-        loadImages();
+        loadPreviews();
       }));
       // disconnect all observers that are not in the new list
       a.forEach(obj => {
