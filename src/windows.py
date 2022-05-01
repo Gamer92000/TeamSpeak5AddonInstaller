@@ -12,14 +12,10 @@ def is_admin():
 def searchForInstallation():
     ts_dir = "/Program Files/TeamSpeak/html/client_ui/index.html"
     # try default drive
-    if Path('C:' + ts_dir).exists():
-        return Path('C:' + ts_dir)
-    else:
-    # if not found in C drive
-        possibleLocations = get_drives()
-        for drive in possibleLocations:
-            if Path(drive + ts_dir).exists():
-                return Path(drive + ts_dir)
+    possibleLocations = get_drives()
+    for drive in possibleLocations:
+        if Path(drive + ts_dir).exists():
+            return Path(drive + ts_dir)
     # ...my friend, you do not have teamspeak 5 installed!
 
 def get_drives():
