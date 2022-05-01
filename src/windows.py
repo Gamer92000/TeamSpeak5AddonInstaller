@@ -1,30 +1,38 @@
-import globals
+import globals, string
+from ctypes import windll
 from pathlib import Path
-
-possibleLocations = ["A:\Program Files\TeamSpeak\html\client_ui\index.html",\
-                     "B:\Program Files\TeamSpeak\html\client_ui\index.html",\
-                     "C:\Program Files\TeamSpeak\html\client_ui\index.html",\
-                     "D:\Program Files\TeamSpeak\html\client_ui\index.html",\
-                     "E:\Program Files\TeamSpeak\html\client_ui\index.html",\
-                     "F:\Program Files\TeamSpeak\html\client_ui\index.html",\
-                     "G:\Program Files\TeamSpeak\html\client_ui\index.html",\
-                     "H:\Program Files\TeamSpeak\html\client_ui\index.html",\
-                     "I:\Program Files\TeamSpeak\html\client_ui\index.html",\
-                     "J:\Program Files\TeamSpeak\html\client_ui\index.html"]
 
 def is_admin():
     try:
-        return ctypes.windll.shell32.IsUserAnAdmin()
+        return windll.shell32.IsUserAnAdmin()
     except Exception:
         return False
 
+# iterates through drives in alphabetical order and takes the first match as path
 def searchForInstallation():
-    for x in possibleLocations:
-        try:
-            if Path(x).is_file():
-                return x
-        except: pass
-    return ""
+    ts_dir = "/Program Files/TeamSpeak/html/client_ui/index.html"
+    # try default drive
+    if Path('C:' + ts_dir).exists():
+        return Path('C:' + ts_dir)
+    else:
+    # if not found in C drive
+        possibleLocations = get_drives()
+        for drive in possibleLocations:
+            if Path(drive + ts_dir).exists():
+                return Path(drive + ts_dir)
+    # ...my friend, you do not have teamspeak 5 installed!
+
+def get_drives():
+    drives = []
+    bitmask = windll.kernel32.GetLogicalDrives()
+    for letter in string.ascii_uppercase:
+        if bitmask & 1 :
+            drives.append(letter + ':')
+        bitmask >>= 1
+    drives.remove('C:')
+    # return a list of connected drives, except C drive
+    return drives
+
 
 def initPlatform():
     globals.platformHome = "%userprofile%"
