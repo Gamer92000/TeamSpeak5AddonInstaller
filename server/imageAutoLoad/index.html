@@ -1,7 +1,7 @@
 <script type="text/javascript" >
   (() => {
     const loadImagesInContainer = async function(messageWrapper) {
-      const files = Array.from(container.getElementsByClassName("ts-chat-message-attachment-file"));
+      const files = Array.from(messageWrapper.getElementsByClassName("ts-chat-message-attachment-file"));
       // filter files for correct button
       const noErrors = files.filter(file => file.getElementsByClassName("error").length === 0);
 
@@ -17,7 +17,7 @@
         loadImagesInContainer(container);
       });
     }
-    
+
     const replacementCallback = async function(mutationsList, observer) {
       for(const mutation of mutationsList) {
         if (mutation.type === 'childList') {
@@ -27,7 +27,7 @@
         }
       }
     }
-    
+
     //poll each .5 sec for open chat windows
     var a = [];
     setInterval(async () => {
