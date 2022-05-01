@@ -25,7 +25,6 @@ def get_drives():
         if bitmask & 1 :
             drives.append(letter + ':')
         bitmask >>= 1
-    drives.remove('C:')
     # return a list of connected drives, except C drive
     return drives
 
