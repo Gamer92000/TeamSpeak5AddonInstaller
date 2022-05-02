@@ -40,7 +40,7 @@
           tmpList.push({key: actualContainer, value: a.filter(obj => obj.key == actualContainer)[0].value});
           return;
         }
-        replacementObserver.observe(actualContainer.firstElementChild.firstElementChild, {childList: true});
+        replacementObserver.observe(actualContainer.firstElementChild.firstElementChild, {childList: true, subtree: true});
         tmpList.push({key: actualContainer, value: replacementObserver});
         loadImages();
       }));
