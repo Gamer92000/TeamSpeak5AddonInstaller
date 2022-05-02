@@ -19,16 +19,7 @@
     }
 
     const replacementCallback = async function(mutationsList, observer) {
-      for(const mutation of mutationsList) {
-        if (mutation.type === 'childList') {
-          for (const node of mutation.addedNodes) {
-            if (node.nodeName == "DIV" && !node.classList.contains("rich-embed")) {
-              loadImagesInContainer(node);
-              node.classList.add("rich-embed");
-            }
-          }
-        }
-      }
+      loadImages();
     }
 
     //poll each .5 sec for open chat windows
@@ -37,12 +28,12 @@
       containerList = Array.from(document.getElementsByClassName("ts-chat-container"));
       var tmpList = [];
       await Promise.all(containerList.map((container) => {
-        const actualContainer = container.getElementsByClassName("tsv-virtual-list-container")[0]
-        const replacementObserver = new MutationObserver(replacementCallback);
+        const actualContainer = container.getElementsByClassName("tsv-virtual-list-container")[0];
         if (a.map(obj => obj.key).includes(actualContainer)) {
           tmpList.push({key: actualContainer, value: a.filter(obj => obj.key == actualContainer)[0].value});
           return;
         }
+        const replacementObserver = new MutationObserver(replacementCallback);
         replacementObserver.observe(actualContainer, {childList: true, subtree: true});
         tmpList.push({key: actualContainer, value: replacementObserver});
         loadImages();

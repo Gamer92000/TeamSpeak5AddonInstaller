@@ -76,7 +76,7 @@
       containerList = Array.from(document.getElementsByClassName("ts-chat-container"));
       var tmpList = [];
       await Promise.all(containerList.map((container) => {
-        const actualContainer = container.getElementsByClassName("tsv-virtual-list-container")[0]
+        const actualContainer = container.getElementsByClassName("tsv-virtual-list-container")[0];
         if (a.map(obj => obj.key).includes(actualContainer)) {
           tmpList.push({key: actualContainer, value: a.filter(obj => obj.key == actualContainer)[0].value});
           return;
