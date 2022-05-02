@@ -22,7 +22,10 @@
       for(const mutation of mutationsList) {
         if (mutation.type === 'childList') {
           for (const node of mutation.addedNodes) {
-            loadImagesInContainer(node);
+            if (node.nodeName == "DIV" && !node.classList.contains("rich-embed")) {
+              loadImagesInContainer(node);
+              node.classList.add("rich-embed");
+            }
           }
         }
       }
@@ -40,7 +43,7 @@
           tmpList.push({key: actualContainer, value: a.filter(obj => obj.key == actualContainer)[0].value});
           return;
         }
-        replacementObserver.observe(actualContainer.firstElementChild.firstElementChild, {childList: true, subtree: true});
+        replacementObserver.observe(actualContainer, {childList: true, subtree: true});
         tmpList.push({key: actualContainer, value: replacementObserver});
         loadImages();
       }));
