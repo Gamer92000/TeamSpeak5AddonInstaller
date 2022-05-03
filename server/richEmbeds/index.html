@@ -34,7 +34,7 @@
           message.firstElementChild.innerHTML = `<video controls loop style="max-width: ${maxVideoWidth}px; max-height: ${maxVideoHeight}px;"><source src="${link}" type="video/webm"></video>`;
         }
         else if (["mp4", "avi", "mkv"].includes(extension)) {
-          message.firstElementChild.innerHTML += `<p style="font-size: .7em; padding-top: 1em;"><i>TeamSpeak doesn not support this video format.</i></p>`;
+          message.firstElementChild.innerHTML += `<p style="font-size: .7em; padding-top: 1em;"><i>TeamSpeak does not support this video format.</i></p>`;
         }
         else if (hostname == "twitter.com") {
           // embed tweet
