@@ -28,10 +28,10 @@
         const hostname = link.split("//")[1].split("/")[0];
 
         if (["jpg", "jpeg", "png", "gif"].includes(extension)) {
-          message.firstElementChild.innerHTML = `<img src="${link}" style="max-width: ${maxImageWidth}px; max-height: ${maxImageHeight}px;" />`;
+          message.firstElementChild.innerHTML = `<img src="${link}" style="max-width: ${maxImageWidth}px; max-height: ${maxImageHeight}px; width: 100%;" />`;
         }
         else if (["webm"].includes(extension)) {
-          message.firstElementChild.innerHTML = `<video controls loop style="max-width: ${maxVideoWidth}px; max-height: ${maxVideoHeight}px;"><source src="${link}" type="video/webm"></video>`;
+          message.firstElementChild.innerHTML = `<video controls loop style="max-width: ${maxVideoWidth}px; max-height: ${maxVideoHeight}px; width: 100%;"><source src="${link}" type="video/webm"></video>`;
         }
         else if (["mp4", "avi", "mkv"].includes(extension)) {
           message.firstElementChild.innerHTML += `<p style="font-size: .7em; padding-top: 1em;"><i>TeamSpeak does not support this video format.</i></p>`;
