@@ -5,6 +5,40 @@
     const maxVideoWidth = 350;
     const maxVideoHeight = 500;
     
+    const setLargeImage = (imageElem) => {
+      // add new element to end of body
+      const newElem = document.createElement("div");
+      newElem.style.width = "100%";
+      newElem.style.height = "100%";
+      newElem.style.position = "absolute";
+      newElem.style.top = "0";
+      newElem.style.left = "0";
+      newElem.style.zIndex = "9999";
+      newElem.style.backgroundColor = "rgba(0,0,0,0.5)";
+      newElem.style.cursor = "zoom-out";
+      newElem.style.display = "flex";
+      newElem.style.alignItems = "center";
+      newElem.style.justifyContent = "center";
+      newElem.style.backdropFilter = "blur(5px)";
+      document.body.appendChild(newElem);
+      // add event listener to new element
+      newElem.addEventListener("click", (event) => {
+          newElem.remove();
+      });
+      // duplicate imageElem
+      const newImageElem = imageElem.cloneNode(true);
+      newImageElem.style.maxWidth = "90%";
+      newImageElem.style.maxHeight = "90%";
+      newImageElem.style.backgroundColor = "#b4caeb";
+      newImageElem.style.margin = "10px";
+      newImageElem.style.width = "initial";
+      newImageElem.style.cursor = "default";
+      newImageElem.addEventListener("click", (event) => {
+        event.stopPropagation();
+      });
+      newElem.appendChild(newImageElem);
+    }
+
     const debounce = function(func, timeout = 300) {
       let timer;
       return (...args) => {
@@ -28,10 +62,25 @@
         const hostname = link.split("//")[1].split("/")[0];
 
         if (["jpg", "jpeg", "png", "gif", "webp"].includes(extension)) {
-          message.firstElementChild.innerHTML = `<img src="${link}" style="max-width: ${maxImageWidth}px; max-height: ${maxImageHeight}px; width: 100%;" />`;
+          const imageElem = document.createElement("img");
+          imageElem.src = link;
+          imageElem.style.maxWidth = maxImageWidth + "px";
+          imageElem.style.maxHeight = maxImageHeight + "px";
+          imageElem.style.width = "100%";
+          imageElem.style.borderRadius = "5px";
+          imageElem.addEventListener("click", () => {
+            setLargeImage(imageElem);
+          });
+          message.innerHTML = '';
+          message.appendChild(imageElem);
+          const linkElem = document.createElement("a");
+          linkElem.href = link;
+          linkElem.target = "_blank";
+          linkElem.innerHTML = "Show original image";
+          message.appendChild(linkElem);
         }
         else if (["webm"].includes(extension)) {
-          message.firstElementChild.innerHTML = `<video controls loop style="max-width: ${maxVideoWidth}px; max-height: ${maxVideoHeight}px; width: 100%;"><source src="${link}" type="video/webm"></video>`;
+          message.innerHTML = `<video controls loop style="max-width: ${maxVideoWidth}px; max-height: ${maxVideoHeight}px; width: 100%;"><source src="${link}" type="video/webm"></video>`;
         }
         else if (["mp4", "avi", "mkv"].includes(extension)) {
           message.firstElementChild.innerHTML += `<p style="font-size: .7em; padding-top: 1em;"><i>TeamSpeak does not support this video format.</i></p>`;
