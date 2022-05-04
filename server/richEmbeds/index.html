@@ -27,7 +27,7 @@
         // get hostname without www
         const hostname = link.split("//")[1].split("/")[0];
 
-        if (["jpg", "jpeg", "png", "gif"].includes(extension)) {
+        if (["jpg", "jpeg", "png", "gif", "webp"].includes(extension)) {
           message.firstElementChild.innerHTML = `<img src="${link}" style="max-width: ${maxImageWidth}px; max-height: ${maxImageHeight}px; width: 100%;" />`;
         }
         else if (["webm"].includes(extension)) {
